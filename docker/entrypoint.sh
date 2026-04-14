@@ -48,4 +48,4 @@ echo "--- Starting Hermes gateway in background ---"
 hermes gateway &
 
 echo "--- Starting Hermes dashboard on 0.0.0.0:9119 ---"
-exec hermes dashboard --host 0.0.0.0 --port 9119 --no-open
+exec hermes dashboard --host 0.0.0.0 --port 9119 --no-open --insecure
