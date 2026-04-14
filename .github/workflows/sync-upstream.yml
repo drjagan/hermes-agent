@@ -1,0 +1,32 @@
+name: Sync upstream
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync fork with upstream
+        run: gh repo sync drjagan/hermes-agent --source NousResearch/hermes-agent --force
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove VOLUME instruction (banned by Railway)
+        run: |
+          if grep -q '^VOLUME' Dockerfile; then
+            sed -i '/^VOLUME/d' Dockerfile
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add Dockerfile
+            git commit -m "chore: remove VOLUME instruction (banned by Railway)"
+            git push
+          else
+            echo "No VOLUME instruction found, nothing to do"
+          fi
